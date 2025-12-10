@@ -79,12 +79,7 @@ Bir kuyruk (Queue) yapısı kullanır.
 
 Projeyi çalıştırmak için yalnızca HTML dosyasını açmanız yeterlidir.
 
-1. Klonlama
-
-git clone https://github.com/kullanici/tree-traversal-simulator.git
-cd tree-traversal-simulator
-
-2. Çalıştırma
+ Çalıştırma
 
 Sadece HTML dosyasını çift tıklayın:
 
@@ -94,50 +89,3 @@ Herhangi bir çerçeve, sunucu veya bağımlılık gerektirmez.
 
 ⸻
 
-📸 Ekran Görüntüleri (Opsiyonel)
-
-Aşağıya görüntüler ekleyebilirsiniz:
-
-/screenshots/
-    - preorder.png
-    - inorder.png
-    - postorder.png
-    - lineorder.png
-
-
-⸻
-
-🧠 Kod Yapısı
-
-root
- ├── index.html        → Simülatör (Tüm HTML + JS tek dosyada)
- ├── README.md         → Proje açıklaması
- └── (opsiyonel) screenshots/
-
-Traversal fonksiyonları:
-	•	preorderTraversal(node)
-	•	inorderTraversal(node)
-	•	postorderTraversal(node)
-	•	lineorderTraversal(root)
-	•	stepTraversal()
-	•	renderTree(root)
-	•	resetSimulation()
-
-⸻
-
-📚 Öğrenme Amaçlı Harika Bir Araç
-
-Bu uygulama;
-	•	Veri Yapıları dersleri
-	•	Binary tree temelli algoritma eğitimleri
-	•	Traversal mantığını sezgisel açıklamak
-	•	Öğrenciler için interaktif sunumlar
-
-gibi pek çok alanda mükemmel bir öğretici araçtır.
-
-⸻
-
-👨‍💻 Geliştirici Notları
-	•	Simülasyon hızı SPEED değişkeniyle kontrol edilir.
-	•	SVG çizgileri otomatik olarak node koordinatlarına göre hesaplanır.
-	•	Düğümler responsive olarak ekran boyutu değiştikçe yeniden hesaplanır.
