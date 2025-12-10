@@ -1,82 +1,143 @@
-İkili Ağaç Dolaşma Simülatörü
+🌳 Binary Tree Traversal Simulator
 
-Bu proje, temel veri yapılarından biri olan İkili Ağaç (Binary Tree) üzerindeki dört farklı dolaşma (traversal) yöntemini görsel olarak simüle eden tek dosyalık, etkileşimli bir HTML uygulamasıdır. Tailwind CSS kullanılarak modern ve duyarlı bir tasarımla geliştirilmiştir.
+Interactive Preorder, Inorder, Postorder & Level-Order (Lineorder) Visualization
 
-🌟 Özellikler
+Bu proje, ikili ağaç dolaşma yöntemlerini görsel ve adım adım simüle eden etkileşimli bir HTML uygulamasıdır.
+Kullanıcı; Preorder, Inorder, Postorder ve Lineorder (Level-Order) algoritmalarının nasıl çalıştığını gerçek zamanlı animasyonlarla izleyebilir.
 
-Dört Dolaşma Yöntemi:
+TailwindCSS ve modern JavaScript teknikleri kullanılarak tasarlanmıştır.
 
-Preorder (Kök → Sol → Sağ)
+⸻
 
-Inorder (Sol → Kök → Sağ)
+🚀 Özellikler
+	•	✔ 4 farklı traversal yöntemi:
+Preorder – Inorder – Postorder – Lineorder (BFS)
+	•	✔ Gerçek zamanlı animasyonlu simülasyon
+	•	✔ Düğümlerin ziyaret edilme sırasını canlı olarak gösterme
+	•	✔ İkili ağacın otomatik çizimi (SVG + HTML)
+	•	✔ Responsive tasarım
+	•	✔ Node’ların renklerle durumsal vurgulanması:
+	•	🟢 current → O anda işlenen düğüm
+	•	🔴 visited → Ziyaret tamamlanan düğüm
+	•	✔ Gelişmiş UI – TailwindCSS modern tasarım öğeleri
+	•	✔ Tek tıklama ile başlatma & sıfırlama mekanizması
 
-Postorder (Sol → Sağ → Kök)
+⸻
 
-Lineorder (BFS): Seviye Seviye (Kuyruk tabanlı)
+🖥️ Kullanılan Örnek Ağaç
 
-Görselleştirme: Ağaç yapısı, düğümler ve bağlantılarla net bir şekilde gösterilir.
+Kod içindeki örnek ikili ağaç yapısı şu şekildedir:
 
-Adım Adım Animasyon: Her dolaşma yönteminin adımları 1 saniyelik gecikmeyle (1000ms) düğümlerin rengi değiştirilerek gösterilir.
+            10
+         /      \
+       5         15
+     /  \      /    \
+    2    7   12     20
+   /    /         /    \
+  1    6        18     25
 
-Gerçek Zamanlı Sonuç: Ziyaret edilen düğümler anlık olarak sonuç alanına eklenir.
+10 düğümlü dengeli bir ağaçtır ve eğitim amaçlı idealdir.
 
-🛠️ Nasıl Çalışır?
+⸻
 
-Proje, tamamen istemci taraflı (client-side) HTML, CSS (Tailwind) ve saf JavaScript kullanılarak geliştirilmiştir. Harici bir bağımlılığa veya sunucuya ihtiyaç duymaz.
+🔧 Kullanılan Teknolojiler
 
-Ağaç Yapısı
-
-Simülasyonda kullanılan örnek ikili ağaç, aşağıdaki sayısal değerlere ve yapıya sahiptir:
-
-        10
-     /      \
-    5        15
-   / \      /  \
-  2   7    12  20
- /   /         / \
-1   6        18  25
+Teknoloji	Amaç
+HTML5	Arayüz
+TailwindCSS	Modern ve responsive UI tasarımı
+JavaScript (ES6)	Traversal algoritmaları, animasyon, DOM kontrolü
+SVG	Ağaç bağlantılarının çizimi
 
 
-Beklenen Dolaşma Sonuçları
+⸻
 
-Simülasyonu başlattığınızda alacağınız sıralar (ziyaret sırası) şunlardır:
+📌 Traversal Kuralları
 
-Yöntem
+1️⃣ Preorder
 
-Kural
+Kök → Sol → Sağ
+Derinlik öncelikli dolaşma.
 
-Sonuç Sırası
+2️⃣ Inorder
 
-Preorder
+Sol → Kök → Sağ
+Sıralı traversal (BST için artan sıra üretir).
 
-Kök-Sol-Sağ
+3️⃣ Postorder
 
-10 5 2 1 7 6 15 12 20 18 25
+Sol → Sağ → Kök
+Alt ağaçlar tamamen bittikten sonra kök işlenir.
 
-Inorder
+4️⃣ Lineorder (Level-Order / BFS)
 
-Sol-Kök-Sağ
+Seviye seviye soldan sağa
+Bir kuyruk (Queue) yapısı kullanır.
 
-1 2 5 6 7 10 12 15 18 20 25
+⸻
 
-Postorder
+▶️ Kurulum & Çalıştırma
 
-Sol-Sağ-Kök
+Projeyi çalıştırmak için yalnızca HTML dosyasını açmanız yeterlidir.
 
-1 2 6 7 5 12 18 25 20 15 10
+1. Klonlama
 
-Lineorder
+git clone https://github.com/kullanici/tree-traversal-simulator.git
+cd tree-traversal-simulator
 
-Seviye Seviye (BFS)
+2. Çalıştırma
 
-10 5 15 2 7 12 20 1 6 18 25
+Sadece HTML dosyasını çift tıklayın:
 
-🚀 Başlangıç
+index.html
 
-Bu projeyi yerel olarak çalıştırmak veya GitHub Pages ile yayınlamak için:
+Herhangi bir çerçeve, sunucu veya bağımlılık gerektirmez.
 
-Bu depoyu klonlayın veya zip dosyasını indirin.
+⸻
 
-tree_traversal_simulator.html dosyasını favori tarayıcınızla (Chrome, Firefox vb.) açın.
+📸 Ekran Görüntüleri (Opsiyonel)
 
-İstediğiniz dolaşma yöntemine tıklayarak simülasyonu başlatın.
+Aşağıya görüntüler ekleyebilirsiniz:
+
+/screenshots/
+    - preorder.png
+    - inorder.png
+    - postorder.png
+    - lineorder.png
+
+
+⸻
+
+🧠 Kod Yapısı
+
+root
+ ├── index.html        → Simülatör (Tüm HTML + JS tek dosyada)
+ ├── README.md         → Proje açıklaması
+ └── (opsiyonel) screenshots/
+
+Traversal fonksiyonları:
+	•	preorderTraversal(node)
+	•	inorderTraversal(node)
+	•	postorderTraversal(node)
+	•	lineorderTraversal(root)
+	•	stepTraversal()
+	•	renderTree(root)
+	•	resetSimulation()
+
+⸻
+
+📚 Öğrenme Amaçlı Harika Bir Araç
+
+Bu uygulama;
+	•	Veri Yapıları dersleri
+	•	Binary tree temelli algoritma eğitimleri
+	•	Traversal mantığını sezgisel açıklamak
+	•	Öğrenciler için interaktif sunumlar
+
+gibi pek çok alanda mükemmel bir öğretici araçtır.
+
+⸻
+
+👨‍💻 Geliştirici Notları
+	•	Simülasyon hızı SPEED değişkeniyle kontrol edilir.
+	•	SVG çizgileri otomatik olarak node koordinatlarına göre hesaplanır.
+	•	Düğümler responsive olarak ekran boyutu değiştikçe yeniden hesaplanır.
