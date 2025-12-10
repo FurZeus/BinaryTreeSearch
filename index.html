@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ağaç Dolaşma Simülasyonu (Preorder, Inorder, Postorder, Lineorder)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Düğüm stili */
+        .node {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: #3b82f6; /* Mavi arka plan */
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out;
+            position: relative;
+            z-index: 10;
+            border: 2px solid #2563eb;
+        }
+
+        /* Vurgulanmış düğüm (ziyaret edilen) */
+        .node.visited {
+            background-color: #ef4444; /* Kırmızı/Sıcak */
+            border-color: #dc2626;
+            transform: scale(1.1);
+        }
+
+        /* Geçerli düğüm (o anda işlenen) */
+        .node.current {
+            background-color: #10b981; /* Yeşil/Canlı */
+            border-color: #059669;
+            box-shadow: 0 0 15px #10b981;
+        }
+
+        /* Ağaç görseli için SVG konteyneri */
+        #tree-container {
+            position: relative;
+            width: 100%;
+            height: 450px; 
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        /* Yollar için SVG */
+        #tree-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+        }
+
+        /* Genel Container için görsel iyileştirme */
+        .main-card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans p-4 sm:p-8 min-h-screen flex items-start justify-center">
+
+    <div class="main-card w-full max-w-6xl">
+        <h1 class="text-3xl font-extrabold text-gray-800 mb-6 border-b pb-2">İkili Ağaç Dolaşma Simülatörü</h1>
+        <p class="text-gray-600 mb-6">Aşağıdaki düğmeleri kullanarak ağaç üzerinde Preorder, Inorder, Postorder ve Lineorder (Seviye Sıralı) yöntemleriyle dolaşmayı simüle edin.</p>
+
+        <!-- Ağaç Görselleştirme Alanı -->
+        <div id="tree-visualization" class="relative bg-gray-50 border border-gray-200 rounded-lg p-4 overflow-hidden" style="min-height: 450px;">
+            <div id="tree-container">
+                <svg id="tree-svg"></svg>
+                <!-- Düğümler buraya JavaScript ile eklenecek -->
+            </div>
+        </div>
+
+        <!-- Kontroller -->
+        <div class="mt-8">
+            <h2 class="text-xl font-semibold text-gray-700 mb-3">Dolaşma Yöntemleri</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                
+                <div class="flex-1">
+                    <button onclick="startTraversal('preorder')" id="btn-preorder" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg transition duration-150 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">
+                        Preorder Dolaşma
+                    </button>
+                    <!-- Kural: Kök -> Sol -> Sağ -->
+                    <p class="mt-2 text-center text-xs font-semibold text-indigo-700">KÖK &rarr; SOL &rarr; SAĞ (Derinlik)</p>
+                </div>
+
+                <div class="flex-1">
+                    <button onclick="startTraversal('inorder')" id="btn-inorder" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-4 rounded-lg transition duration-150 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-opacity-50">
+                        Inorder Dolaşma
+                    </button>
+                    <!-- Kural: Sol -> Kök -> Sağ -->
+                    <p class="mt-2 text-center text-xs font-semibold text-pink-700">SOL &rarr; KÖK &rarr; SAĞ (Derinlik)</p>
+                </div>
+
+                <div class="flex-1">
+                    <button onclick="startTraversal('postorder')" id="btn-postorder" class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-4 rounded-lg transition duration-150 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-50">
+                        Postorder Dolaşma
+                    </button>
+                    <!-- Kural: Sol -> Sağ -> Kök -->
+                    <p class="mt-2 text-center text-xs font-semibold text-teal-700">SOL &rarr; SAĞ &rarr; KÖK (Derinlik)</p>
+                </div>
+
+                <div class="flex-1">
+                    <button onclick="startTraversal('lineorder')" id="btn-lineorder" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-lg transition duration-150 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-opacity-50">
+                        Lineorder Dolaşma
+                    </button>
+                    <!-- Kural: Seviye Seviye (Kuyruk) -->
+                    <p class="mt-2 text-center text-xs font-semibold text-amber-700">SEVİYE &rarr; SEVİYE (Genişlik)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sonuç ve Durum -->
+        <div class="mt-8 bg-white p-5 border-2 border-dashed border-gray-300 rounded-xl">
+            <h2 class="text-xl font-semibold text-gray-700 mb-2">Dolaşma Sonucu</h2>
+            <div id="result" class="text-2xl font-mono text-gray-800 p-3 bg-gray-50 border rounded-lg min-h-[50px]">
+                Sonuç burada gösterilecektir.
+            </div>
+            <div id="status-message" class="mt-3 text-sm text-gray-500">
+                Lütfen bir dolaşma yöntemi seçerek simülasyonu başlatın.
+            </div>
+            <button onclick="resetSimulation()" class="mt-4 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg text-sm transition duration-150">
+                Sıfırla
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Ağaç yapısını temsil eden Node sınıfı
+        class Node {
+            constructor(data, id) {
+                this.data = data;
+                this.left = null;
+                this.right = null;
+                this.id = id; // Görselleştirme için benzersiz kimlik
+            }
+        }
+
+        // Simülasyon hızı (milisaniye)
+        const SPEED = 1000; 
+        let traversalQueue = [];
+        let isSimulating = false;
+        let stepInterval;
+        let nodeIdCounter = 0;
+
+        // Ağacı tanımla (Sayısal yapı: 10, 5, 15, 2, 7, 20, 1, 6, 12, 18, 25)
+        const createSampleTree = () => {
+            nodeIdCounter = 0;
+            
+            // Düğümler
+            const N10 = new Node(10, ++nodeIdCounter); // Kök
+            const N5 = new Node(5, ++nodeIdCounter);
+            const N15 = new Node(15, ++nodeIdCounter);
+            const N2 = new Node(2, ++nodeIdCounter);
+            const N7 = new Node(7, ++nodeIdCounter);
+            const N20 = new Node(20, ++nodeIdCounter);
+            const N1 = new Node(1, ++nodeIdCounter);
+            const N6 = new Node(6, ++nodeIdCounter);
+            const N12 = new Node(12, ++nodeIdCounter);
+            const N18 = new Node(18, ++nodeIdCounter);
+            const N25 = new Node(25, ++nodeIdCounter);
+            
+            // Yapılandırma
+            N10.left = N5;
+            N10.right = N15;
+
+            N5.left = N2;
+            N5.right = N7;
+
+            N2.left = N1;
+
+            N7.left = N6;
+
+            N15.left = N12;
+            N15.right = N20;
+
+            N20.left = N18;
+            N20.right = N25;
+
+            return N10;
+        };
+
+        const root = createSampleTree();
+
+        // ---------------------------------------------------
+        // Görselleştirme Kodları
+        // ---------------------------------------------------
+
+        const nodePositions = new Map(); // Düğüm pozisyonlarını (x, y) tutar
+
+        // Ağacı görselleştirme alanına yerleştirir
+        function renderTree(root) {
+            const container = document.getElementById('tree-container');
+            const svg = document.getElementById('tree-svg');
+            container.innerHTML = ''; // Önceki düğümleri temizle
+            container.appendChild(svg);
+            svg.innerHTML = ''; // Önceki yolları temizle
+
+            const width = container.offsetWidth;
+            const height = container.offsetHeight;
+
+            // Yeni görselleştirme fonksiyonu (basitleştirilmiş ve daha iyi yayılan)
+            function visualizeTree(node, x, y, h_gap) {
+                if (!node) return;
+
+                nodePositions.set(node.id, { x: x, y: y });
+                
+                const v_gap = 80; // Dikey boşluk
+                const next_h_gap = h_gap / 2; // Yatay boşluğu her seviyede azalt
+
+                if (node.left) {
+                    visualizeTree(node.left, x - next_h_gap, y + v_gap, next_h_gap);
+                }
+                if (node.right) {
+                    visualizeTree(node.right, x + next_h_gap, y + v_gap, next_h_gap);
+                }
+            }
+            
+            // Görselleştirmeyi başlat
+            // İlk yatay boşluğu (h_gap) ağacın genel genişliğine göre ayarla
+            visualizeTree(root, width / 2, 40, width / 4); 
+
+
+            // Ağaçtaki yolları çizen fonksiyon
+            function drawPaths(node) {
+                if (!node) return;
+
+                const pos = nodePositions.get(node.id);
+                const r = 20; // Düğüm yarıçapı
+
+                if (node.left) {
+                    const leftPos = nodePositions.get(node.left.id);
+                    // SVG path/line çizme (düğümlerin kenarından başla/bitir)
+                    svg.innerHTML += `<line x1="${pos.x}" y1="${pos.y + r}" x2="${leftPos.x}" y2="${leftPos.y - r}" stroke="#ccc" stroke-width="2" />`;
+                    drawPaths(node.left);
+                }
+
+                if (node.right) {
+                    const rightPos = nodePositions.get(node.right.id);
+                    svg.innerHTML += `<line x1="${pos.x}" y1="${pos.y + r}" x2="${rightPos.x}" y2="${rightPos.y - r}" stroke="#ccc" stroke-width="2" />`;
+                    drawPaths(node.right);
+                }
+            }
+
+            drawPaths(root);
+            
+            // Düğümleri HTML'e ekleyen fonksiyon
+            function drawNodes(node) {
+                if (!node) return;
+
+                const pos = nodePositions.get(node.id);
+                const nodeEl = document.createElement('div');
+                nodeEl.id = `node-${node.id}`;
+                nodeEl.className = 'node absolute';
+                nodeEl.textContent = node.data;
+                nodeEl.style.left = `${pos.x - 20}px`; // Yarım genişlik kadar sola kaydır
+                nodeEl.style.top = `${pos.y - 20}px`; // Yarım yükseklik kadar yukarı kaydır
+                nodeEl.setAttribute('data-value', node.data);
+                
+                container.appendChild(nodeEl);
+
+                drawNodes(node.left);
+                drawNodes(node.right);
+            }
+
+            drawNodes(root);
+        }
+
+        // Sayfa yüklendiğinde ağacı çiz
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTree(root);
+            // Ekran yeniden boyutlandığında da ağacı yeniden çiz
+            window.addEventListener('resize', () => {
+                renderTree(root);
+            });
+        });
+
+        // ---------------------------------------------------
+        // Dolaşma Algoritmaları
+        // ---------------------------------------------------
+
+        // Dolaşma işlemlerini başlatır
+        function startTraversal(type) {
+            if (isSimulating) {
+                document.getElementById('status-message').textContent = 'Zaten bir simülasyon çalışıyor. Lütfen önce sıfırlayın.';
+                return;
+            }
+
+            // Önceki durumu sıfırla
+            resetSimulation();
+
+            traversalQueue = [];
+            const resultElement = document.getElementById('result');
+            resultElement.textContent = '';
+            
+            document.getElementById('status-message').textContent = `${type.toUpperCase()} dolaşma başlatılıyor...`;
+            
+            // Dolaşma tipine göre listeyi doldur
+            switch (type) {
+                case 'preorder':
+                    preorderTraversal(root);
+                    break;
+                case 'inorder':
+                    inorderTraversal(root);
+                    break;
+                case 'postorder':
+                    postorderTraversal(root);
+                    break;
+                case 'lineorder':
+                    lineorderTraversal(root);
+                    break;
+                default:
+                    return;
+            }
+
+            isSimulating = true;
+            disableButtons(true);
+            
+            // Simülasyon adımını başlat
+            stepInterval = setInterval(stepTraversal, SPEED);
+        }
+
+        // Preorder (Kök -> Sol -> Sağ)
+        function preorderTraversal(node) {
+            if (node) {
+                traversalQueue.push({ node: node, action: 'visit' }); // Ziyaret et (Kök)
+                preorderTraversal(node.left); // Sol
+                preorderTraversal(node.right); // Sağ
+            }
+        }
+
+        // Inorder (Sol -> Kök -> Sağ)
+        function inorderTraversal(node) {
+            if (node) {
+                inorderTraversal(node.left); // Sol
+                traversalQueue.push({ node: node, action: 'visit' }); // Ziyaret et (Kök)
+                inorderTraversal(node.right); // Sağ
+            }
+        }
+
+        // Postorder (Sol -> Sağ -> Kök)
+        function postorderTraversal(node) {
+            if (node) {
+                postorderTraversal(node.left); // Sol
+                postorderTraversal(node.right); // Sağ
+                traversalQueue.push({ node: node, action: 'visit' }); // Ziyaret et (Kök)
+            }
+        }
+
+        // Lineorder (Seviye Sıralı / BFS)
+        function lineorderTraversal(root) {
+            if (!root) return;
+
+            const queue = [root]; // Kuyruk başlatılıyor
+            
+            while (queue.length > 0) {
+                const node = queue.shift(); // Kuyruktan çıkar (dequeue)
+                traversalQueue.push({ node: node, action: 'visit' });
+
+                if (node.left) {
+                    queue.push(node.left); // Sol çocuğu kuyruğa ekle (enqueue)
+                }
+                if (node.right) {
+                    queue.push(node.right); // Sağ çocuğu kuyruğa ekle (enqueue)
+                }
+            }
+        }
+
+        // ---------------------------------------------------
+        // Simülasyon Adımı ve Kontroller
+        // ---------------------------------------------------
+        
+        // Simülasyonun tek bir adımını gerçekleştirir
+        function stepTraversal() {
+            if (traversalQueue.length === 0) {
+                // Simülasyon bitti
+                clearInterval(stepInterval);
+                isSimulating = false;
+                disableButtons(false);
+                document.getElementById('status-message').textContent = 'Dolaşma tamamlandı.';
+                return;
+            }
+
+            // Sıradan sonraki adımı al
+            const step = traversalQueue.shift();
+            const nodeEl = document.getElementById(`node-${step.node.id}`);
+            const resultElement = document.getElementById('result');
+
+            // Önceki "current" düğümü temizle
+            document.querySelectorAll('.node.current').forEach(el => el.classList.remove('current'));
+
+            if (step.action === 'visit') {
+                // Düğümü vurgula (ziyaret edildi)
+                nodeEl.classList.remove('visited');
+                nodeEl.classList.add('current');
+
+                // Sonuca ekle
+                const currentValue = nodeEl.getAttribute('data-value');
+                resultElement.textContent += currentValue + ' ';
+                
+                // Kısa bir süre sonra 'current' sınıfını kaldırıp 'visited' sınıfını ekle
+                setTimeout(() => {
+                    nodeEl.classList.remove('current');
+                    nodeEl.classList.add('visited');
+                }, SPEED / 2);
+            }
+        }
+
+        // Simülasyonu sıfırlar
+        function resetSimulation() {
+            clearInterval(stepInterval);
+            isSimulating = false;
+            traversalQueue = [];
+            disableButtons(false);
+
+            // Tüm düğümlerin görsel durumunu sıfırla
+            document.querySelectorAll('.node').forEach(el => {
+                el.classList.remove('visited', 'current');
+            });
+
+            // Sonucu temizle
+            document.getElementById('result').textContent = 'Sonuç burada gösterilecektir.';
+            document.getElementById('status-message').textContent = 'Lütfen bir dolaşma yöntemi seçerek simülasyonu başlatın.';
+        }
+
+        // Düğmeleri etkinleştirir veya devre dışı bırakır
+        function disableButtons(disabled) {
+            document.getElementById('btn-preorder').disabled = disabled;
+            document.getElementById('btn-inorder').disabled = disabled;
+            document.getElementById('btn-postorder').disabled = disabled;
+            document.getElementById('btn-lineorder').disabled = disabled; // Lineorder düğmesi de eklendi
+            // Sıfırlama düğmesi her zaman etkin kalabilir.
+        }
+
+    </script>
+
+</body>
+</html>
